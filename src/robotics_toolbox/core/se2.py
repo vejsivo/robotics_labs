@@ -19,9 +19,8 @@ from robotics_toolbox.core import SO2
 class SE2:
     """Transformation in 2D that is composed of rotation and translation."""
 
-    def __init__(
-        self, translation: ArrayLike | None = None, rotation: SO2 | float | None = None
-    ) -> None:
+    def __init__(self, translation: ArrayLike | None = None,
+                 rotation: SO2 | float | None = None) -> None:
         """Crete an SE2 transformation. Identity is the default. The se3 instance
         is represented by translation and rotation, where rotation is SO2 instance.
 
@@ -43,20 +42,24 @@ class SE2:
 
     def __mul__(self, other: SE2) -> SE2:
         """Compose two transformation, i.e., self * other"""
-        # todo: HW01: implement composition of two transformation.
-        return SE2()
+        result = SE2()
+        result.rotation.rot = self.rotation.rot @ other.rotation.rot
+        result.translation = self.translation + self.rotation.rot @ other.translation
+        return result
 
     def inverse(self) -> SE2:
         """Compute inverse of the transformation. Do not use np.linalg.inv."""
-        # todo: HW1 implement inverse
-        return SE2()
+        result = SE2()
+        result.rotation.rot = self.rotation.rot.T
+        result.translation = -result.rotation.rot @ self.translation
+        return result
 
     def act(self, vector: ArrayLike) -> np.ndarray:
         """Transform given 2D vector by this SE2 transformation."""
-        v = np.asarray(vector)
-        assert v.shape == (2,)
-        # todo: HW1 implement transformation of a given vector
-        return v
+        result = np.asarray(vector)
+        assert result.shape == (2,)
+        result = self.rotation.rot @ vector + self.translation
+        return result
 
     def set_from(self, other: SE2):
         """Copy the properties into current instance."""

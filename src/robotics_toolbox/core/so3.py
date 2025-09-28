@@ -20,17 +20,17 @@ class SO3:
         """Creates a rotation transformation from rot_vector."""
         super().__init__()
         self.rot: np.ndarray = (
-            np.asarray(rotation_matrix) if rotation_matrix is not None else np.eye(3)
-        )
+            np.asarray(rotation_matrix) if rotation_matrix is not None else np.eye(3))
 
     @staticmethod
     def exp(rot_vector: ArrayLike) -> SO3:
         """Compute SO3 transformation from a given rotation vector, i.e. exponential
         representation of the rotation."""
+        # todo HW01: implement Rodrigues' formula, t.rot = ...
         v = np.asarray(rot_vector)
+        v_skew = np.
         assert v.shape == (3,)
         t = SO3()
-        # todo HW01: implement Rodrigues' formula, t.rot = ...
         return t
 
     def log(self) -> np.ndarray:
