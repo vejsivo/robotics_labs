@@ -26,28 +26,43 @@ class SO3:
     def exp(rot_vector: ArrayLike) -> SO3:
         """Compute SO3 transformation from a given rotation vector, i.e. exponential
         representation of the rotation."""
-        # todo HW01: implement Rodrigues' formula, t.rot = ...
         v = np.asarray(rot_vector)
-        v_skew = np.
         assert v.shape == (3,)
-        t = SO3()
-        return t
+        v_skew = np.array([
+            [0, -v[2], v[1]],
+            [v[2], 0, -v[0]],
+            [-v[1], v[0], 0]
+        ])
+        theta = np.linalg.norm(v)
+        I = np.eye(3)
+
+        result = SO3()
+        result.rot = I + (np.sin(theta) / theta) * v_skew + \
+            ((1 - np.cos(theta)) / (theta**2)) * (v_skew @ v_skew)
+        return result
 
     def log(self) -> np.ndarray:
         """Compute rotation vector from this SO3"""
-        # todo HW01: implement computation of rotation vector from this SO3
-        v = np.zeros(3)
+        R = self.rot
+        theta = np.arccos((np.trace(R) - 1) / 2)
+        if abs(theta) < 1e-12:   # handle zero division
+            return np.zeros(3)
+        v = theta / (2 * np.sin(theta)) * np.array([R[2, 1] - R[1, 2],
+                                                   R[0, 2] - R[2, 0],
+                                                   R[1, 0] - R[0, 1]])
         return v
 
     def __mul__(self, other: SO3) -> SO3:
         """Compose two rotations, i.e., self * other"""
-        # todo: HW01: implement composition of two rotation.
-        return SO3()
+        result = SO3()
+        result.rot = self.rot @ other.rot
+        return result
 
     def inverse(self) -> SO3:
         """Return inverse of the transformation."""
-        # todo: HW01: implement inverse, do not use np.linalg.inverse()
-        return SO3()
+        result = SO3()
+        result.rot = self.rot.T
+        return result
 
     def act(self, vector: ArrayLike) -> np.ndarray:
         """Rotate given vector by this transformation."""
